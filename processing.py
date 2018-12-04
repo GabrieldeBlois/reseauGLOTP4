@@ -150,18 +150,26 @@ def ProcessSendLocalEmail(client, msg, recipientUserName):
     path = "./"
 # 1 - Check if the recipient exists
     if not CheckIfDirectoryExistsInCurrentDir(recipientUserName):
-        if not CheckIfDirectoryExistsInCurrentDir("./DESTERREUR"):
+        if not CheckIfDirectoryExistsInCurrentDir("DESTERREUR"):
             os.makedirs("./DESTERREUR")
         path += "DESTERREUR/"
     else:
         path += recipientUserName + "/"
     
 # 2 - Open the email file or create it if needed
-    emailFile = open(path + "emaillist.json", 'w+')
+    # the 'w' option creates the file if it doesn't exist, '+' is read write
+    
+    path += "emaillist.json"
+    
+    if not CheckIfFileExists(path):
+        emailFile = open(path, 'w+')
+    else:
+        emailFile = open(path, 'r+')
     
     # read
     rawContent = emailFile.read()
-    
+    print("Current content:", rawContent)
+
 # 3 - Get all already existing emails
     emaillist = []
     if rawContent != "":
@@ -172,9 +180,11 @@ def ProcessSendLocalEmail(client, msg, recipientUserName):
 
 # 5 - write it to the email json file
     rawContent = json.dumps(emaillist)
+    emailFile.seek(0)
     emailFile.write(rawContent)
 # 6 - close the email file
     emailFile.close()
+    print("Email successfuly sent")
     return {"msgType": "ok"}
 
 
@@ -196,6 +206,7 @@ def ProcessSendEmail(client, msg):
         return {"msgType": "error", "errorType": "Le contenu est un champ obligatoire."}
 
 # 2 - Check if the address is well formated
+    # i didn't made the following regex myself because creating a suitable regex for email parsing that is 100% sure is not possible, so i refered myself to the offical regexes for this matter
     # this is the official RFC 5322 Regex. Taken from https://emailregex.com/
     p = re.compile(r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)")
 
