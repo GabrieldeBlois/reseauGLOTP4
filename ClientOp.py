@@ -67,7 +67,7 @@ def ClientOpGetEmail(sock):
     mailList = receivedAsDict["mailList"]
     
     if len(mailList) is 0:
-        print("Info: votre liste de courriels accessebles est actuellement vide")
+        print("Info: votre liste de courriels accessibles est actuellement vide")
         return
     
     print("La liste de courriels accessibles a une longueur de: " + str(len(mailList)) + " courriels.")
@@ -132,6 +132,11 @@ def ClientOpStats(sock):
     received = recv_msg(sock)
 
     receivedAsDict = json.loads(received)
+    if (receivedAsDict["msgType"] == "error"):
+        print("Error:", receivedAsDict["errorType"])
+        input("Appuyer sur entré pour continuer...")
+        return
+
     subjectList = receivedAsDict["subjectList"]
     dirSize = receivedAsDict["dirSize"]
 
