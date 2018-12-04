@@ -27,6 +27,7 @@ def ClientOpSendEmail(sock):
         received = recv_msg(sock)
     except:
         print("Erreur: le serveur semble s'être arreté, le client doit donc se fermer.")
+        exit()
     # print("Received: {0}", received)
 
 # 3 - Process the answer from the server
@@ -58,6 +59,7 @@ def ClientOpGetEmail(sock):
         received = recv_msg(sock)
     except:
         print("Erreur: le serveur semble s'être arreté, le client doit donc se fermer.")
+        exit()
     # print("Received: {0}", received)
 
     receivedAsDict = json.loads(received)
@@ -105,8 +107,7 @@ def ClientOpGetEmail(sock):
         received = recv_msg(sock)
     except:
         print("Erreur: le serveur semble s'être arreté, le client doit donc se fermer.")
-    # print("Sending: " + toSendAsJson)
-    # print("Received: {0}", received)
+        exit()
 
 # 5 - Get the answer from the server and write it
     receivedAsDict = json.loads(received)
@@ -142,6 +143,7 @@ def ClientOpStats(sock):
         received = recv_msg(sock)
     except:
         print("Erreur: le serveur semble s'être arreté, le client doit donc se fermer.")
+        exit()
 
     receivedAsDict = json.loads(received)
     if (receivedAsDict["msgType"] == "error"):

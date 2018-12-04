@@ -9,7 +9,7 @@ print("Data : ")
 text = ""
 temp = input()
 
-while temp != ".":
+while temp != ".":  
     text += temp + "\n"
     temp = input()
 

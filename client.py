@@ -100,22 +100,5 @@ while True:
     else:
         MainLoop()
         break
-    # msg_received = recv_msg(s)
-
-    # receivedDict = json.load(msg_received)
-
-    # if server answered there was an error
-    # if ErrorHandling(receivedDict):
-    # s.close()
-    # continue
 
 s.close()
-
-
-
-    
-
-# program main loop
-#while True:
-
-# s.cl:ose()
