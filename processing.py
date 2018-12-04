@@ -166,11 +166,13 @@ def ProcessSendLocalEmail(client, msg, recipientUserName):
     
     path += "emaillist.json"
     
-    if not CheckIfFileExists(path):
-        emailFile = open(path, 'w+')
-    else:
-        emailFile = open(path, 'r+')
-    
+    try:
+        if not CheckIfFileExists(path):
+            emailFile = open(path, 'w+')
+        else:
+            emailFile = open(path, 'r+')
+    except:
+        return {"msgType": "error", "errorType": "Désolé, le fichier utilisateur n'a pas pu être ouvert. Peut être est-il ouvert part une autre session, réessayez plus tard."}
     # read
     rawContent = emailFile.read()
     print("Current content:", rawContent)
