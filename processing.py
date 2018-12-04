@@ -20,8 +20,20 @@ def ProcessClientLoop(client):
         except:
             print("User disconnected")
             return
-        msgReceivedAsDict = json.loads(msgReceivedAsJson)
-
+        try:
+            # check if the received message is in a valid json format
+            msgReceivedAsDict = json.loads(msgReceivedAsJson)
+            # if msgType does not exist, it will trigger the "except"
+            msgType = msgReceivedAsDict["msgType"]
+        except:
+            msgToSend = {"msgType": "error", "errorType": "Votre message doit être formaté en json et posseder un attribut msgType."}
+            try:
+                print(json.dumps(msgToSend))
+                send_msg(client.sock, json.dumps(msgToSend))
+            except:
+                print("Error: client disconnected")
+                return
+            continue
         msgToSend = {}
 
 # 2 - Check if the client is already authentified
