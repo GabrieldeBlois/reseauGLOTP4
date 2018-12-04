@@ -3,8 +3,10 @@ import re
 import os
 import datetime
 import socket
+import smtplib
 from socketUtil import recv_msg, send_msg
 from utils import HashText, GetFileSize, CheckIfDirectoryExistsInCurrentDir, CheckIfFileExists, GetDirSize
+from email.mime.text import MIMEText
 
 # the inside loop for each client
 # 1 - get the next msg from the client
@@ -191,9 +193,23 @@ def ProcessSendLocalEmail(client, msg, recipientUserName):
     return {"msgType": "ok"}
 
 
+# 1 - creation d’un objet courriel avec MIMEText
+# 2 - envoi du courriel grace au protocole SMTP et au serveur de l’universite Laval
 def ProcessSendExternalEmail(client, msg, recipientEmailAddress):
-    return {"msgType": "ok"}
+# 1 - creation d’un objet courriel avec MIMEText
+    mimemsg = MIMEText(msg["content"])
+    mimemsg["From"] = client.username + "@reseauglo.ca"
+    mimemsg["To"] = msg["recipient"]
+    mimemsg["Subject"] = msg["subject"]
 
+# 2 - envoi du courriel grace au protocole SMTP et au serveur de l’universite Laval
+    try:
+        smtpConnection = smtplib.SMTP(host="smtp.ulaval.ca", timeout=10)
+        smtpConnection.sendmail(mimemsg["From"], mimemsg["To"], mimemsg.as_string())
+        smtpConnection.quit()
+        return {"msgType": "ok"}
+    except smtplib.SMTPException as e:
+        return {"msgType": "error", "errorType": "L’envoi n’a pas pu etre effectue."}
 
 # 1 - Error handling on the received message
 # 2 - Check if the address is well formated
