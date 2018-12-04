@@ -52,13 +52,14 @@ def MainLoop():
             ClientOpSendEmail(s)
         elif value is 2:
             toSendDict["msgType"] = "getEmail"
+            ClientOpGetEmail(s)
         elif value is 3:
             toSendDict["msgType"] = "stats"
         elif value is 4:
             return
         else:
             print(
-                "Erreur: Veuillez rentrer un chiffre correspondant à un des deux choix proposés.")
+                "Erreur: Veuillez rentrer un chiffre correspondant à des choix proposés.")
             continue
     return
 
@@ -88,10 +89,10 @@ while True:
     toSendDict["username"] = username
     toSendDict["pwd"] = mdp
 
-    print("Sending: {0}", json.dumps(toSendDict))
+    # print("Sending: {0}", json.dumps(toSendDict))
     send_msg(s, json.dumps(toSendDict))
     received = recv_msg(s)
-    print("Received: {0}", received)
+    # print("Received: {0}", received)
 
     receidAsDict = json.loads(received)
     if receidAsDict["msgType"] == "error":

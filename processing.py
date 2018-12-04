@@ -31,6 +31,7 @@ def ProcessClientLoop(client):
 # 3 - Send the message resulting from the processing
         # try sending the message to the client
         try:
+            print(json.dumps(msgToSend))
             send_msg(client.sock, json.dumps(msgToSend))
         except:
             print("Error: client disconnected")
@@ -52,7 +53,7 @@ def ProcessAuthentifiedClient(client, msg):
         return ProcessSendEmail(client, msg)
     elif msg["msgType"] == "getEmail":
         print("New operation requested: getEmail")
-        return
+        return ProcessGetEmail(client, msg)
     elif msg["msgType"] == "stats":
         print("New operation requested: stats")
         return
@@ -229,3 +230,30 @@ def ProcessSendEmail(client, msg):
         return ProcessSendLocalEmail(client, msg, username)
     else:
         return ProcessSendExternalEmail(client, msg, recipient)
+
+def ProcessGetEmailSendList(client, msg):
+    if CheckIfFileExists(client.userPath + "emaillist.json"):
+        with open(client.userPath + "emaillist.json") as infp:
+            rawContent = infp.read()
+            contentDeserialized = json.loads(rawContent)
+            subjectList = list((x["subject"] for x in contentDeserialized))
+            print(subjectList)
+            return {"msgType": "getEmail", "mailList": subjectList} 
+    return {"msgType": "getEmail", "mailList": []}  
+    
+def ProcessGetEmailSendSpecificMsg(client, msg, msgIndex):
+    if CheckIfFileExists(client.userPath + "emaillist.json"):
+        with open(client.userPath + "emaillist.json") as infp:
+            rawContent = infp.read()
+            contentDeserialized = json.loads(rawContent)
+            if msgIndex > len(contentDeserialized) or msgIndex < 0:
+                return {"msgType": "error", "errorType": "Le courriel demandé n'existe pas"}
+            desiredEmail = contentDeserialized[msgIndex]
+            return desiredEmail
+    return {"msgType": "error", "errorType": "Vous n'avez aucun courriel pour le moment"}
+
+def ProcessGetEmail(client, msg):
+    if "chosenEmailIndex" in msg.keys():
+        return ProcessGetEmailSendSpecificMsg(client, msg, msg["chosenEmailIndex"])
+    else:
+        return ProcessGetEmailSendList(client, msg)

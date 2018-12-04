@@ -21,10 +21,10 @@ def ClientOpSendEmail(sock):
     # serialization as json
     toSendAsJson = json.dumps(toSend)
 
-    print("Sending: " + toSendAsJson)
+    # print("Sending: " + toSendAsJson)
     send_msg(sock, toSendAsJson)
     received = recv_msg(sock)
-    print("Received: {0}", received)
+    # print("Received: {0}", received)
 
 # 3 - Process the answer from the server
     # deserialization of the received answer from the server
@@ -49,10 +49,10 @@ def ClientOpGetEmail(sock):
     toSendAsJson = json.dumps(toSend)
 
 # 2 - Get the server's answer and write it
-    print("Sending: " + toSendAsJson)
+    # print("Sending: " + toSendAsJson)
     send_msg(sock, toSendAsJson)
     received = recv_msg(sock)
-    print("Received: {0}", received)
+    # print("Received: {0}", received)
 
     receivedAsDict = json.loads(received)
     
@@ -74,6 +74,7 @@ def ClientOpGetEmail(sock):
     incr = 1
     for subject in mailList:
         print(str(incr) + ".\t" + subject)
+        incr += 1
     
 # 3 - Get the user's choice
     value = 0
@@ -89,14 +90,14 @@ def ClientOpGetEmail(sock):
         break        
 
 # 4 - Send the server the number user has chosen
-    toSend = {"msgType": "getEmail", "chosenEmailIndex": value}
+    toSend = {"msgType": "getEmail", "chosenEmailIndex": value - 1}
     
     toSendAsJson = json.dumps(toSend)
 
-    print("Sending: " + toSendAsJson)
+    # print("Sending: " + toSendAsJson)
     send_msg(sock, toSendAsJson)
     received = recv_msg(sock)
-    print("Received: {0}", received)
+    # print("Received: {0}", received)
 
 # 5 - Get the answer from the server and write it
     receivedAsDict = json.loads(received)
@@ -104,10 +105,19 @@ def ClientOpGetEmail(sock):
     if receivedAsDict["msgType"] == "error":
         print("Erreur:", receivedAsDict["msgType"])
         return
-    
-    print("Destinataire:", receivedAsDict["recipient"])
-    print("Envoyeur:", receivedAsDict["sender"])
+    print() 
+    print("Destinataire:\t", receivedAsDict["recipient"])
+    print("Envoyeur:\t", receivedAsDict["sender"])
+    print("Date:\t", receivedAsDict["date"])
+    print()
+    print()
     print("Sujet:", receivedAsDict["subject"])
-    print("Date:", receivedAsDict["date"])
-    print("Contenu:\n", receivedAsDict["content"])
+    print()
+    print()
+    print(receivedAsDict["content"])
+    print()
+    print()
+
+    input("Appuyer sur entré pour continuer...")
+
     return
