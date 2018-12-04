@@ -4,7 +4,7 @@ import datetime
 import json
 from socketUtil import recv_msg, send_msg
 from utils import GetPassword
-from ClientOp import ClientOpGetEmail, ClientOpSendEmail
+from ClientOp import ClientOpGetEmail, ClientOpSendEmail, ClientOpStats
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-d", "--destination", action="store",
@@ -51,10 +51,9 @@ def MainLoop():
         if value is 1:
             ClientOpSendEmail(s)
         elif value is 2:
-            toSendDict["msgType"] = "getEmail"
             ClientOpGetEmail(s)
         elif value is 3:
-            toSendDict["msgType"] = "stats"
+            ClientOpStats(s)
         elif value is 4:
             return
         else:

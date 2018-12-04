@@ -121,3 +121,28 @@ def ClientOpGetEmail(sock):
     input("Appuyer sur entré pour continuer...")
 
     return
+
+def ClientOpStats(sock):
+    toSend = {"msgType": "stats"}
+
+    # serialization as json
+    toSendAsJson = json.dumps(toSend)
+
+    send_msg(sock, toSendAsJson)
+    received = recv_msg(sock)
+
+    receivedAsDict = json.loads(received)
+    subjectList = receivedAsDict["subjectList"]
+    dirSize = receivedAsDict["dirSize"]
+
+    print()
+    print("Nombre total d'email: " + str(len(subjectList)) + ".")
+    print("Taille totale de votre dossier utilisateur sur le serveur: " + str(dirSize / 1000) + "kb.")
+    if len(subjectList) == 0:
+        return
+    print()
+    print("Liste des sujets de vos courriels:")
+    print('\n'.join(subjectList))
+    print()
+    input("Appuyer sur entré pour continuer...")
+

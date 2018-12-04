@@ -4,7 +4,7 @@ import os
 import datetime
 import socket
 from socketUtil import recv_msg, send_msg
-from utils import HashText, GetFileSize, CheckIfDirectoryExistsInCurrentDir, CheckIfFileExists
+from utils import HashText, GetFileSize, CheckIfDirectoryExistsInCurrentDir, CheckIfFileExists, GetDirSize
 
 # the inside loop for each client
 # 1 - get the next msg from the client
@@ -56,7 +56,7 @@ def ProcessAuthentifiedClient(client, msg):
         return ProcessGetEmail(client, msg)
     elif msg["msgType"] == "stats":
         print("New operation requested: stats")
-        return
+        return ProcessStats(client, msg)
     # not recognized msgType
     return {"msgType": "error", "errorType": "L'operation demandée n'est pas disponible"}
 
@@ -97,6 +97,8 @@ def ProcessConnection(client, msg):
     
     client.userPath = "./" + str(client.username) + "/"
 
+    if not CheckIfFileExists(client.userPath + "config.txt"):
+        return {"msgType": "error", "errorType": "Ce nom d'utilisateur a été corrompu, veuillez contacter votre administrateur"}
     configFile = open(client.userPath + "config.txt", 'r')
     hashedPwd = configFile.read()
 
@@ -237,7 +239,6 @@ def ProcessGetEmailSendList(client, msg):
             rawContent = infp.read()
             contentDeserialized = json.loads(rawContent)
             subjectList = list((x["subject"] for x in contentDeserialized))
-            print(subjectList)
             return {"msgType": "getEmail", "mailList": subjectList} 
     return {"msgType": "getEmail", "mailList": []}  
     
@@ -257,3 +258,12 @@ def ProcessGetEmail(client, msg):
         return ProcessGetEmailSendSpecificMsg(client, msg, msg["chosenEmailIndex"])
     else:
         return ProcessGetEmailSendList(client, msg)
+
+def ProcessStats(client, msg):
+    if CheckIfFileExists(client.userPath + "emaillist.json"):
+        with open(client.userPath + "emaillist.json") as infp:
+            rawContent = infp.read()
+            contentDeserialized = json.loads(rawContent)
+            subjectList = list((x["subject"] for x in contentDeserialized))
+            return {"msgType": "stats", "subjectList": subjectList, "dirSize": GetDirSize(client.userPath)}
+    return {"msgType": "error", "errorType": "Vous n'avez aucun courriel pour le moment, cependant la taille de votre dossier personnel est de: " + str(GetDirSize(client.userPath)) + "."}
